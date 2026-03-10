@@ -2,9 +2,10 @@ import React from 'react';
 
 interface HeaderProps {
   title: string;
+  showToast: (msg: string) => void;
 }
 
-export default function Header({ title }: HeaderProps) {
+export default function Header({ title, showToast }: HeaderProps) {
   return (
     <header className="h-20 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 lg:px-8 flex items-center justify-between sticky top-0 z-10">
       <div className="flex items-center gap-4">
@@ -20,11 +21,11 @@ export default function Header({ title }: HeaderProps) {
           />
         </div>
         <div className="flex items-center gap-3 border-l border-slate-200 dark:border-slate-800 pl-4 lg:pl-6">
-          <button className="relative p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors">
+          <button onClick={() => showToast('Nenhuma notificação no momento')} className="relative p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors">
             <span className="material-symbols-outlined">notifications</span>
             <span className="absolute top-2 right-2 size-2 bg-red-500 rounded-full border-2 border-white dark:border-slate-900"></span>
           </button>
-          <div className="size-10 rounded-full bg-slate-200 overflow-hidden border-2 border-primary/20 cursor-pointer">
+          <div onClick={() => showToast('Abrindo menu do perfil...')} className="size-10 rounded-full bg-slate-200 overflow-hidden border-2 border-primary/20 cursor-pointer">
             <img
               className="w-full h-full object-cover"
               alt="Avatar de perfil"

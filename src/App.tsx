@@ -77,7 +77,7 @@ export default function App() {
       <Sidebar activeView={activeView} setActiveView={setActiveView} />
       
       <div className="flex-1 flex flex-col overflow-hidden relative">
-        {activeView !== 'budget' && <Header title={getTitle()} />}
+        {activeView !== 'budget' && <Header title={getTitle()} showToast={showToast} />}
         
         <main className="flex-1 overflow-y-auto pb-20 lg:pb-0">
           {renderView()}

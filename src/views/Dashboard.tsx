@@ -45,10 +45,6 @@ export default function Dashboard({ setActiveView, showToast, openModal, transac
             <span className="material-symbols-outlined opacity-80">account_balance</span>
           </div>
           <div className="text-3xl font-bold mb-2">R$ {balance.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
-          <div className="flex items-center gap-1 text-sm text-green-300">
-            <span className="material-symbols-outlined text-xs">trending_up</span>
-            <span>+5.2% em relação ao mês anterior</span>
-          </div>
         </div>
         <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800">
           <div className="flex justify-between items-start mb-4">
@@ -56,9 +52,6 @@ export default function Dashboard({ setActiveView, showToast, openModal, transac
             <span className="material-symbols-outlined text-green-500">arrow_circle_up</span>
           </div>
           <div className="text-3xl font-bold text-slate-900 dark:text-white mb-2">R$ {totalIncome.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
-          <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
-            <div className="bg-green-500 h-full w-[85%]"></div>
-          </div>
         </div>
         <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800">
           <div className="flex justify-between items-start mb-4">
@@ -66,9 +59,6 @@ export default function Dashboard({ setActiveView, showToast, openModal, transac
             <span className="material-symbols-outlined text-red-500">arrow_circle_down</span>
           </div>
           <div className="text-3xl font-bold text-slate-900 dark:text-white mb-2">R$ {totalExpense.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
-          <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
-            <div className="bg-red-500 h-full w-[45%]"></div>
-          </div>
         </div>
       </div>
 
@@ -80,44 +70,52 @@ export default function Dashboard({ setActiveView, showToast, openModal, transac
             <button onClick={() => setActiveView('budget')} className="text-primary text-sm font-semibold hover:underline">Ver Detalhes</button>
           </div>
           <div className="flex flex-col md:flex-row items-center gap-8 lg:gap-12">
-            <div className="relative size-48">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={pieData}
-                    innerRadius={60}
-                    outerRadius={80}
-                    paddingAngle={5}
-                    dataKey="value"
-                    stroke="none"
-                  >
-                    {pieData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                </PieChart>
-              </ResponsiveContainer>
-              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                <span className="text-2xl font-bold">R$ {totalExpense > 1000 ? (totalExpense/1000).toFixed(1) + 'k' : totalExpense.toFixed(0)}</span>
-                <span className="text-[10px] text-slate-500 uppercase tracking-wider">Total Saídas</span>
-              </div>
-            </div>
-            <div className="flex-1 space-y-4 w-full">
-              {pieData.map((cat, index) => {
-                const percentage = totalExpense > 0 ? Math.round((cat.value / totalExpense) * 100) : 0;
-                return (
-                  <div key={index} className="flex items-center justify-between text-sm">
-                    <div className="flex items-center gap-2">
-                      <div className="size-3 rounded-full" style={{ backgroundColor: cat.color }}></div>
-                      <span>{cat.name} ({percentage}%)</span>
-                    </div>
-                    <span className="font-semibold text-slate-700 dark:text-slate-300">
-                      R$ {cat.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                    </span>
+            {pieData.length > 0 ? (
+              <>
+                <div className="relative size-48">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={pieData}
+                        innerRadius={60}
+                        outerRadius={80}
+                        paddingAngle={5}
+                        dataKey="value"
+                        stroke="none"
+                      >
+                        {pieData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                    </PieChart>
+                  </ResponsiveContainer>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                    <span className="text-2xl font-bold">R$ {totalExpense > 1000 ? (totalExpense/1000).toFixed(1) + 'k' : totalExpense.toFixed(0)}</span>
+                    <span className="text-[10px] text-slate-500 uppercase tracking-wider">Total Saídas</span>
                   </div>
-                );
-              })}
-            </div>
+                </div>
+                <div className="flex-1 space-y-4 w-full">
+                  {pieData.map((cat, index) => {
+                    const percentage = totalExpense > 0 ? Math.round((cat.value / totalExpense) * 100) : 0;
+                    return (
+                      <div key={index} className="flex items-center justify-between text-sm">
+                        <div className="flex items-center gap-2">
+                          <div className="size-3 rounded-full" style={{ backgroundColor: cat.color }}></div>
+                          <span>{cat.name} ({percentage}%)</span>
+                        </div>
+                        <span className="font-semibold text-slate-700 dark:text-slate-300">
+                          R$ {cat.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
+            ) : (
+              <div className="w-full py-12 text-center text-slate-500">
+                Nenhuma despesa registrada ainda.
+              </div>
+            )}
           </div>
         </div>
 

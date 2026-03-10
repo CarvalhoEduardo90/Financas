@@ -45,7 +45,7 @@ export default function Sidebar({ activeView, setActiveView }: SidebarProps) {
       <div className="mt-auto p-6">
         <div className="bg-primary/10 dark:bg-primary/20 p-4 rounded-xl">
           <p className="text-sm font-semibold text-primary mb-1">Dica do Mês</p>
-          <p className="text-xs text-slate-600 dark:text-slate-300">Você economizou 15% mais que no mês passado!</p>
+          <p className="text-xs text-slate-600 dark:text-slate-300">Registre todas as suas despesas para um controle mais preciso.</p>
         </div>
       </div>
     </aside>

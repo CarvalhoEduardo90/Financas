@@ -76,7 +76,6 @@ export default function Budget({ showToast, openModal, transactions, loading }: 
           </div>
           <div className="flex items-baseline gap-2">
             <h3 className="text-3xl font-bold">R$ {totalSpent.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</h3>
-            <span className="text-sm text-red-500 font-medium">+12% vs set</span>
           </div>
           <div className="mt-4 w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5">
             <div className="bg-primary h-1.5 rounded-full" style={{ width: `${percentageSpent}%` }}></div>
@@ -89,13 +88,13 @@ export default function Budget({ showToast, openModal, transactions, loading }: 
             <span className="p-2 rounded-lg bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 material-symbols-outlined">savings</span>
           </div>
           <div className="flex items-baseline gap-2">
-            <h3 className="text-3xl font-bold text-green-600 dark:text-green-500">R$ 1.850,00</h3>
-            <span className="text-sm text-green-500 font-medium">Meta: R$ 2k</span>
+            <h3 className="text-3xl font-bold text-green-600 dark:text-green-500">R$ 0,00</h3>
+            <span className="text-sm text-green-500 font-medium">Meta: R$ 0,00</span>
           </div>
           <div className="mt-4 w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5">
-            <div className="bg-green-500 h-1.5 rounded-full" style={{ width: '92%' }}></div>
+            <div className="bg-green-500 h-1.5 rounded-full" style={{ width: '0%' }}></div>
           </div>
-          <p className="text-xs text-slate-400 mt-2">Você está quase na meta!</p>
+          <p className="text-xs text-slate-400 mt-2">Defina uma meta para começar!</p>
         </div>
         <div className="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
           <div className="flex items-center justify-between mb-4">
@@ -103,8 +102,8 @@ export default function Budget({ showToast, openModal, transactions, loading }: 
             <span className="p-2 rounded-lg bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 material-symbols-outlined">lightbulb</span>
           </div>
           <div className="flex flex-col">
-            <h3 className="text-lg font-bold">Refeições fora</h3>
-            <p className="text-sm text-slate-500">Pode economizar até <span className="text-primary font-bold">R$ 350</span> reduzindo pedidos de delivery.</p>
+            <h3 className="text-lg font-bold">Sem sugestões</h3>
+            <p className="text-sm text-slate-500">Adicione mais transações para receber dicas automáticas.</p>
           </div>
           <button onClick={() => showToast('Detalhes da sugestão de corte')} className="mt-4 text-xs font-bold text-primary flex items-center gap-1 hover:underline">
             VER DETALHES <span className="material-symbols-outlined text-xs">arrow_forward</span>
@@ -234,17 +233,12 @@ export default function Budget({ showToast, openModal, transactions, loading }: 
             <div className="flex items-start justify-between">
               <div>
                 <h3 className="font-bold text-lg">Saúde Financeira</h3>
-                <p className="text-blue-100 text-sm mt-1">Sua família está no caminho certo!</p>
+                <p className="text-blue-100 text-sm mt-1">Acompanhe seus gastos para manter a saúde financeira em dia.</p>
               </div>
               <span className="material-symbols-outlined text-3xl opacity-50">verified_user</span>
             </div>
             <div className="mt-6 flex items-center gap-4">
-              <div className="flex -space-x-3">
-                <img alt="Avatar 1" className="size-8 rounded-full border-2 border-primary object-cover bg-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBtzwjM5bMzQfGBfu47O3akYTXK6_fCXybl6EJ4XH9BgNWrjKORVQKh7bua5TFp779cBQJqCtJHjuCV4ZKfFB52aigJWmSIz2x7DLgsjnW12qDSEHSgiJLT0BaKaU558u0EAF3nGjpJEg11jOUKHVsXSxWXeEQMSE6nmXm1l376nAsMDqppBHdpipMgKXdEi9ZEKKB2DeUfGTAfosTDMUXCHHUDF4jpkIx7-BE0r1IlAJWt7CX7MROl-seuP6Utokj4L7e-HLg9_Ok"/>
-                <img alt="Avatar 2" className="size-8 rounded-full border-2 border-primary object-cover bg-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCcs99JDwOqf_goMotRyAvZxas7ykoNCpQ80Odz5C7fxuaNcKXOCeerTsoaek7nrbNRhT87pc4_6SnD0dnCtprF0PcwGuvVRIt5iHQuDwMI-pL3pNoMAEQYaUU5IPn47e9icpdJeU6VLBwHzqU_9fbOaHk10eTXJM376QKId0S-DknTPumwoltjts1MjYAwI02AuVDlBES9wb4vWvzww1qv3acoF3F2_eONZ2kQlWETw9KZOsSMNHUkDyL_nSLDGeBihAftVgZTzrU"/>
-                <img alt="Avatar 3" className="size-8 rounded-full border-2 border-primary object-cover bg-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAydvgmS03FMe-VXTJZl40bvc0ab88GM5ZMG5l2alrwF6AEOzlhFXsElER7NZwzj1WTGrHwk_FuBbHQ0P2bZjxGGM0awVFRi1AT9IeNdVrGtDbcuFfO4Nf-0NtY60ht07668YqNUBytba-HPGubyRNEm7qrR43F4TnVp14NHg7MNhC3fOlTOUHVA90xxudcjWmC7rfh5W_oAS3NPapWYBusblAGrCGtI-QgWPF_cflYwrFyqMJnUvXR0WAXXZSO2gb9Ehr0FbFwUzY"/>
-              </div>
-              <span className="text-xs font-medium">3 membros economizando este mês</span>
+              <span className="text-xs font-medium">Mantenha suas transações atualizadas</span>
             </div>
           </div>
         </div>
@@ -258,31 +252,8 @@ export default function Budget({ showToast, openModal, transactions, loading }: 
             Oportunidades de Economia
           </h2>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-slate-100 dark:divide-slate-800">
-          <div onClick={() => showToast('Detalhes da oportunidade')} className="p-6 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer">
-            <span className="material-symbols-outlined text-amber-500 mb-2">subscriptions</span>
-            <h4 className="font-bold text-sm">Assinaturas Inativas</h4>
-            <p className="text-xs text-slate-500 mt-1">Identificamos 2 streamings que você não acessa há 30 dias.</p>
-            <p className="text-xs font-bold text-primary mt-3">Economize R$ 64,90</p>
-          </div>
-          <div onClick={() => showToast('Detalhes da oportunidade')} className="p-6 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer">
-            <span className="material-symbols-outlined text-green-500 mb-2">bolt</span>
-            <h4 className="font-bold text-sm">Eficiência Energética</h4>
-            <p className="text-xs text-slate-500 mt-1">Seu gasto com luz subiu 15%. Tente reduzir o uso do ar-condicionado.</p>
-            <p className="text-xs font-bold text-primary mt-3">Potencial: R$ 80,00</p>
-          </div>
-          <div onClick={() => showToast('Detalhes da oportunidade')} className="p-6 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer">
-            <span className="material-symbols-outlined text-blue-500 mb-2">fastfood</span>
-            <h4 className="font-bold text-sm">Planejamento de Refeições</h4>
-            <p className="text-xs text-slate-500 mt-1">Cozinhar em casa aos domingos pode reduzir gastos com iFood.</p>
-            <p className="text-xs font-bold text-primary mt-3">Potencial: R$ 200,00</p>
-          </div>
-          <div onClick={() => showToast('Detalhes da oportunidade')} className="p-6 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer">
-            <span className="material-symbols-outlined text-purple-500 mb-2">local_offer</span>
-            <h4 className="font-bold text-sm">Dia de Ofertas</h4>
-            <p className="text-xs text-slate-500 mt-1">Terças-feiras são 10% mais baratas no Hortifruti parceiro.</p>
-            <p className="text-xs font-bold text-primary mt-3">Economia de ~R$ 40,00</p>
-          </div>
+        <div className="p-6 text-center text-slate-500">
+          Adicione mais transações para que possamos analisar e sugerir oportunidades de economia personalizadas para você.
         </div>
       </div>
     </div>
