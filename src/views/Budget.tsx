@@ -6,9 +6,10 @@ interface BudgetProps {
   openModal: () => void;
   transactions: any[];
   loading: boolean;
+  userEmail?: string;
 }
 
-export default function Budget({ showToast, openModal, transactions, loading }: BudgetProps) {
+export default function Budget({ showToast, openModal, transactions, loading, userEmail = 'Usuário' }: BudgetProps) {
   const [goals, setGoals] = useState(initialGoals);
 
   const handleAddGoal = () => {
@@ -49,6 +50,11 @@ export default function Budget({ showToast, openModal, transactions, loading }: 
   const totalSpent = categoriesWithSpent.reduce((acc, c) => acc + c.spent, 0);
   const percentageSpent = totalBudget > 0 ? Math.round((totalSpent / totalBudget) * 100) : 0;
 
+  const currentMonthName = new Date().toLocaleString('pt-BR', { month: 'long' });
+  const capitalizedMonth = currentMonthName.charAt(0).toUpperCase() + currentMonthName.slice(1);
+
+  const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(userEmail)}&background=0D8ABC&color=fff`;
+
   return (
     <div className="flex flex-col min-h-full">
       {/* Top Navigation specific to Budget view */}
@@ -65,11 +71,11 @@ export default function Budget({ showToast, openModal, transactions, loading }: 
               <span className="material-symbols-outlined text-sm">workspace_premium</span>
               <span className="text-sm font-semibold">Plano Premium</span>
             </div>
-            <button className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 transition-colors">
+            <button onClick={() => showToast('Nenhuma notificação no momento')} className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 transition-colors">
               <span className="material-symbols-outlined">notifications</span>
             </button>
             <div className="h-10 w-10 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden border-2 border-primary/20">
-              <img alt="Profile" className="h-full w-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtktZe1aeDvd_xrYhHAvydiFjRSAkDF3G8izzgP38at0CVIgVKGKZMGtKiTX-5uOOZMXdHONi7T_iDzcU2A7tLym2XZGQE7yO5vCd4g27C5ZwQbD3uysE3g80CSHV-1KCtEsovGfv2-lx2U6m3QuacP5Ng2PRnoSALN3D3tueblWDW5EbSjNUq4ScJ0dImULXwFYbRM2f4enQTbbuNOgd71vhDwaLf61Tr3xSGwA53FW6du0c1rrWDjPuRbp_DKmSu2stlx0YfVJ8"/>
+              <img alt="Profile" className="h-full w-full object-cover" src={avatarUrl}/>
             </div>
           </div>
         </div>
@@ -80,7 +86,7 @@ export default function Budget({ showToast, openModal, transactions, loading }: 
         <div className="mb-8">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">Orçamento de Outubro</h1>
+              <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">Orçamento de {capitalizedMonth}</h1>
               <p className="text-slate-500 dark:text-slate-400 mt-1">Gestão inteligente para a Família Silva</p>
             </div>
             <div className="flex gap-2">

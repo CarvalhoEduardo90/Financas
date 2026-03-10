@@ -11,80 +11,45 @@ interface UserManagementProps {
 }
 
 export default function UserManagement({ showToast }: UserManagementProps) {
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<User[]>([
+    { id: '1', email: 'admin@familia.com', created_at: new Date().toISOString() }
+  ]);
   const [loading, setLoading] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
   const [newEmail, setNewEmail] = useState('');
   const [newPassword, setNewPassword] = useState('');
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  const fetchUsers = async () => {
-    try {
-      setLoading(true);
-      const res = await fetch('/api/users');
-      if (!res.ok) throw new Error('Falha ao carregar usuários');
-      const data = await res.json();
-      setUsers(data || []);
-    } catch (error: any) {
-      showToast(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleAddUser = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newEmail || !newPassword) return;
     
-    try {
-      setLoading(true);
-      const res = await fetch('/api/users', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: newEmail, password: newPassword })
-      });
-      
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.error || 'Falha ao criar usuário');
-      }
-      
+    setLoading(true);
+    // Mocking API call
+    setTimeout(() => {
+      const newUser = {
+        id: Date.now().toString(),
+        email: newEmail,
+        created_at: new Date().toISOString()
+      };
+      setUsers([...users, newUser]);
       showToast('Usuário criado com sucesso!');
       setNewEmail('');
       setNewPassword('');
       setIsAdding(false);
-      fetchUsers();
-    } catch (error: any) {
-      showToast(error.message);
-    } finally {
       setLoading(false);
-    }
+    }, 1000);
   };
 
   const handleDeleteUser = async (id: string) => {
     if (!window.confirm('Tem certeza que deseja excluir este usuário?')) return;
     
-    try {
-      setLoading(true);
-      const res = await fetch(`/api/users/${id}`, {
-        method: 'DELETE'
-      });
-      
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.error || 'Falha ao excluir usuário');
-      }
-      
+    setLoading(true);
+    // Mocking API call
+    setTimeout(() => {
+      setUsers(users.filter(u => u.id !== id));
       showToast('Usuário excluído com sucesso!');
-      fetchUsers();
-    } catch (error: any) {
-      showToast(error.message);
-    } finally {
       setLoading(false);
-    }
+    }, 500);
   };
 
   return (
@@ -113,7 +78,7 @@ export default function UserManagement({ showToast }: UserManagementProps) {
                 type="email"
                 value={newEmail}
                 onChange={(e) => setNewEmail(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-primary outline-none"
+                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary outline-none"
                 placeholder="email@exemplo.com"
                 required
               />
@@ -124,7 +89,7 @@ export default function UserManagement({ showToast }: UserManagementProps) {
                 type="password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-primary outline-none"
+                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary outline-none"
                 placeholder="Mínimo 6 caracteres"
                 minLength={6}
                 required

@@ -15,6 +15,9 @@ export default function Transactions({ showToast, openModal, transactions, loadi
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
+  const currentMonthName = new Date().toLocaleString('pt-BR', { month: 'long' });
+  const capitalizedMonth = currentMonthName.charAt(0).toUpperCase() + currentMonthName.slice(1);
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -69,7 +72,7 @@ export default function Transactions({ showToast, openModal, transactions, loadi
           <div className="flex-1 min-w-[200px]">
             <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">Período</label>
             <select className="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-lg text-sm py-2.5 focus:ring-primary outline-none">
-              <option>Este Mês (Outubro)</option>
+              <option>Este Mês ({capitalizedMonth})</option>
               <option>Mês Passado</option>
               <option>Últimos 90 dias</option>
               <option>Ano atual</option>

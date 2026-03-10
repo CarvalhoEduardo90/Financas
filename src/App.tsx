@@ -68,13 +68,14 @@ export default function App() {
   const openModal = () => setIsModalOpen(true);
 
   const renderView = () => {
+    const userEmail = session?.user?.email || 'Usuário';
     switch (activeView) {
       case 'dashboard':
         return <Dashboard setActiveView={setActiveView} showToast={showToast} openModal={openModal} transactions={transactions} loading={loading} />;
       case 'transactions':
         return <Transactions showToast={showToast} openModal={openModal} transactions={transactions} loading={loading} fetchTransactions={fetchTransactions} />;
       case 'budget':
-        return <Budget showToast={showToast} openModal={openModal} transactions={transactions} loading={loading} />;
+        return <Budget showToast={showToast} openModal={openModal} transactions={transactions} loading={loading} userEmail={userEmail} />;
       case 'settings':
         return <Settings showToast={showToast} onLogout={() => setSession(null)} />;
       default:
@@ -111,12 +112,14 @@ export default function App() {
     );
   }
 
+  const userEmail = session?.user?.email || 'Usuário';
+
   return (
     <div className="flex h-screen bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display overflow-hidden">
       <Sidebar activeView={activeView} setActiveView={setActiveView} />
       
       <div className="flex-1 flex flex-col overflow-hidden relative">
-        {activeView !== 'budget' && <Header title={getTitle()} showToast={showToast} />}
+        {activeView !== 'budget' && <Header title={getTitle()} showToast={showToast} userEmail={userEmail} />}
         
         <main className="flex-1 overflow-y-auto pb-20 lg:pb-0">
           {renderView()}
