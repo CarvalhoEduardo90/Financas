@@ -10,37 +10,19 @@ export default function Login({ onLogin, showToast }: LoginProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [isSignUp, setIsSignUp] = useState(false);
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-        });
-        if (error) throw error;
-        showToast('Cadastro realizado com sucesso! Verifique seu email se necessário.');
-        // Auto-login after signup if email confirmation is disabled, otherwise prompt to check email
-        // For simplicity, we'll try to just log them in or let them know it worked.
-        const { data: sessionData } = await supabase.auth.getSession();
-        if (sessionData.session) {
-            onLogin();
-        } else {
-            setIsSignUp(false);
-        }
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-        if (error) throw error;
-        showToast('Login realizado com sucesso!');
-        onLogin();
-      }
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (error) throw error;
+      showToast('Login realizado com sucesso!');
+      onLogin();
     } catch (error: any) {
       showToast(error.message || 'Ocorreu um erro durante a autenticação.');
     } finally {
@@ -58,10 +40,10 @@ export default function Login({ onLogin, showToast }: LoginProps) {
         </div>
         
         <h2 className="text-2xl font-bold text-center mb-2 text-slate-900 dark:text-white">
-          {isSignUp ? 'Criar uma conta' : 'Bem-vindo de volta'}
+          Bem-vindo de volta
         </h2>
         <p className="text-center text-slate-500 mb-8">
-          {isSignUp ? 'Cadastre-se para gerenciar suas finanças' : 'Faça login para acessar seu painel'}
+          Faça login para acessar seu painel
         </p>
 
         <form onSubmit={handleAuth} className="space-y-4">
@@ -97,19 +79,10 @@ export default function Login({ onLogin, showToast }: LoginProps) {
             {loading ? (
               <span className="material-symbols-outlined animate-spin">progress_activity</span>
             ) : (
-              isSignUp ? 'Cadastrar' : 'Entrar'
+              'Entrar'
             )}
           </button>
         </form>
-
-        <div className="mt-6 text-center">
-          <button
-            onClick={() => setIsSignUp(!isSignUp)}
-            className="text-sm text-primary hover:underline font-medium"
-          >
-            {isSignUp ? 'Já tem uma conta? Faça login' : 'Não tem uma conta? Cadastre-se'}
-          </button>
-        </div>
       </div>
     </div>
   );

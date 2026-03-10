@@ -1,5 +1,6 @@
 import React from 'react';
 import { supabase } from '../lib/supabase';
+import UserManagement from '../components/UserManagement';
 
 interface SettingsProps {
   showToast: (msg: string) => void;
@@ -41,19 +42,7 @@ export default function Settings({ showToast, onLogout }: SettingsProps) {
             </button>
           </div>
 
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
-            <div>
-              <h3 className="font-bold text-slate-900 dark:text-white">Membros da Família</h3>
-              <p className="text-sm text-slate-500">Gerencie quem tem acesso ao seu painel financeiro.</p>
-            </div>
-            <button 
-              onClick={() => showToast('Funcionalidade em desenvolvimento')}
-              className="px-6 py-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-900 dark:text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
-            >
-              <span className="material-symbols-outlined text-sm">group_add</span>
-              Convidar
-            </button>
-          </div>
+          <UserManagement showToast={showToast} />
         </div>
       </div>
 
