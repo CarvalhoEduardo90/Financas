@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { initialCategories, initialGoals } from '../data';
 
 interface BudgetProps {
@@ -9,6 +9,35 @@ interface BudgetProps {
 }
 
 export default function Budget({ showToast, openModal, transactions, loading }: BudgetProps) {
+  const [goals, setGoals] = useState(initialGoals);
+
+  const handleAddGoal = () => {
+    const name = window.prompt('Qual o nome da nova meta? (ex: Viagem)');
+    if (!name) return;
+    
+    const amountStr = window.prompt('Qual o valor total da meta? (ex: 5000)');
+    if (!amountStr) return;
+    
+    const amount = parseFloat(amountStr);
+    if (isNaN(amount)) {
+      showToast('Valor inválido!');
+      return;
+    }
+
+    const newGoal = {
+      id: Date.now().toString(),
+      name,
+      targetAmount: amount,
+      currentAmount: 0,
+      targetDate: 'Dez 2026',
+      icon: 'star',
+      color: 'primary'
+    };
+
+    setGoals([...goals, newGoal]);
+    showToast('Meta adicionada com sucesso!');
+  };
+
   const categoriesWithSpent = initialCategories.map(c => {
     const spent = transactions
       .filter(t => t.type === 'expense' && t.category === c.name)
@@ -189,12 +218,12 @@ export default function Budget({ showToast, openModal, transactions, loading }: 
                 <span className="material-symbols-outlined text-primary">target</span>
                 Metas Ativas
               </h2>
-              <button onClick={() => showToast('Adicionar nova meta')} className="text-primary p-1 hover:bg-primary/10 rounded-full transition-colors">
+              <button onClick={handleAddGoal} className="text-primary p-1 hover:bg-primary/10 rounded-full transition-colors">
                 <span className="material-symbols-outlined">add</span>
               </button>
             </div>
             <div className="space-y-6">
-              {initialGoals.map(goal => {
+              {goals.map(goal => {
                 const percent = Math.round((goal.currentAmount / goal.targetAmount) * 100);
                 const isPrimary = goal.color === 'primary';
                 
@@ -221,7 +250,7 @@ export default function Budget({ showToast, openModal, transactions, loading }: 
               })}
               
               {/* New Goal CTA */}
-              <button onClick={() => showToast('Adicionar nova meta')} className="w-full py-4 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl text-slate-400 hover:text-primary hover:border-primary transition-all flex flex-col items-center justify-center gap-1 group">
+              <button onClick={handleAddGoal} className="w-full py-4 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl text-slate-400 hover:text-primary hover:border-primary transition-all flex flex-col items-center justify-center gap-1 group">
                 <span className="material-symbols-outlined group-hover:scale-110 transition-transform">add_circle</span>
                 <span className="text-sm font-medium">Adicionar meta de economia</span>
               </button>

@@ -1,15 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { initialCategories } from '../data';
+import { supabase } from '../lib/supabase';
 
 interface TransactionsProps {
   showToast: (msg: string) => void;
   openModal: () => void;
   transactions: any[];
   loading: boolean;
+  fetchTransactions?: () => void;
 }
 
-export default function Transactions({ showToast, openModal, transactions, loading }: TransactionsProps) {
+export default function Transactions({ showToast, openModal, transactions, loading, fetchTransactions }: TransactionsProps) {
   const [filterType, setFilterType] = useState('Tudo');
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setOpenMenuId(null);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleDelete = async (id: string) => {
+    if (!window.confirm('Tem certeza que deseja excluir esta transação?')) return;
+    try {
+      const { error } = await supabase.from('transactions').delete().eq('id', id);
+      if (error) throw error;
+      showToast('Transação excluída com sucesso!');
+      if (fetchTransactions) fetchTransactions();
+    } catch (error: any) {
+      showToast('Erro ao excluir: ' + error.message);
+    } finally {
+      setOpenMenuId(null);
+    }
+  };
 
   const filteredTransactions = transactions.filter(tx => {
     if (filterType === 'Entradas') return tx.type === 'income';
@@ -142,10 +170,25 @@ export default function Transactions({ showToast, openModal, transactions, loadi
                         </span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-right">
-                      <button onClick={() => showToast('Opções da transação')} className="text-slate-400 hover:text-primary transition-colors">
+                    <td className="px-6 py-4 text-right relative">
+                      <button 
+                        onClick={() => setOpenMenuId(openMenuId === tx.id ? null : tx.id)} 
+                        className="text-slate-400 hover:text-primary transition-colors"
+                      >
                         <span className="material-symbols-outlined">more_horiz</span>
                       </button>
+                      
+                      {openMenuId === tx.id && (
+                        <div ref={menuRef} className="absolute right-8 top-10 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg py-1 z-10 min-w-[120px]">
+                          <button 
+                            onClick={() => handleDelete(tx.id)}
+                            className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-slate-50 dark:hover:bg-slate-700/50 flex items-center gap-2"
+                          >
+                            <span className="material-symbols-outlined text-[18px]">delete</span>
+                            Excluir
+                          </button>
+                        </div>
+                      )}
                     </td>
                   </tr>
                 );

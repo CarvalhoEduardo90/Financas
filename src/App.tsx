@@ -72,7 +72,7 @@ export default function App() {
       case 'dashboard':
         return <Dashboard setActiveView={setActiveView} showToast={showToast} openModal={openModal} transactions={transactions} loading={loading} />;
       case 'transactions':
-        return <Transactions showToast={showToast} openModal={openModal} transactions={transactions} loading={loading} />;
+        return <Transactions showToast={showToast} openModal={openModal} transactions={transactions} loading={loading} fetchTransactions={fetchTransactions} />;
       case 'budget':
         return <Budget showToast={showToast} openModal={openModal} transactions={transactions} loading={loading} />;
       case 'settings':
