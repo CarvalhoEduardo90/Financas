@@ -84,6 +84,7 @@ export default function Login({ onLogin, showToast }: LoginProps) {
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-primary outline-none transition-all"
               placeholder="••••••••"
+              minLength={6}
               required
             />
           </div>
