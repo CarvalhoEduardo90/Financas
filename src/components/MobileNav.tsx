@@ -12,7 +12,7 @@ export default function MobileNav({ activeView, setActiveView, showToast, openMo
     { id: 'dashboard', label: 'Resumo', icon: 'dashboard' },
     { id: 'transactions', label: 'Extrato', icon: 'receipt_long' },
     { id: 'budget', label: 'Orçamento', icon: 'account_balance_wallet' },
-    { id: 'settings', label: 'Metas', icon: 'trending_up' },
+    { id: 'settings', label: 'Ajustes', icon: 'settings' },
   ];
 
   return (
@@ -40,8 +40,8 @@ export default function MobileNav({ activeView, setActiveView, showToast, openMo
         onClick={() => setActiveView('settings')}
         className={`flex flex-col items-center gap-1 ${activeView === 'settings' ? 'text-primary' : 'text-slate-400'}`}
       >
-        <span className="material-symbols-outlined">trending_up</span>
-        <span className="text-[10px] font-bold">Metas</span>
+        <span className="material-symbols-outlined">settings</span>
+        <span className="text-[10px] font-bold">Ajustes</span>
       </button>
       <button
         onClick={() => setActiveView('transactions')}

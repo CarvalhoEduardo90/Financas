@@ -10,10 +10,13 @@ import MobileNav from './components/MobileNav';
 import Dashboard from './views/Dashboard';
 import Transactions from './views/Transactions';
 import Budget from './views/Budget';
+import Settings from './views/Settings';
+import Login from './views/Login';
 import TransactionModal from './components/TransactionModal';
 import { supabase } from './lib/supabase';
 
 export default function App() {
+  const [session, setSession] = useState<any>(null);
   const [activeView, setActiveView] = useState('dashboard');
   const [toastMessage, setToastMessage] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -21,7 +24,25 @@ export default function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchTransactions();
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      if (session) {
+        fetchTransactions();
+      }
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      if (session) {
+        fetchTransactions();
+      } else {
+        setTransactions([]);
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const fetchTransactions = async () => {
@@ -54,6 +75,8 @@ export default function App() {
         return <Transactions showToast={showToast} openModal={openModal} transactions={transactions} loading={loading} />;
       case 'budget':
         return <Budget showToast={showToast} openModal={openModal} transactions={transactions} loading={loading} />;
+      case 'settings':
+        return <Settings showToast={showToast} onLogout={() => setSession(null)} />;
       default:
         return <Dashboard setActiveView={setActiveView} showToast={showToast} openModal={openModal} transactions={transactions} loading={loading} />;
     }
@@ -67,10 +90,26 @@ export default function App() {
         return 'Transações';
       case 'budget':
         return 'Orçamento';
+      case 'settings':
+        return 'Configurações';
       default:
         return 'Resumo Financeiro';
     }
   };
+
+  if (!session) {
+    return (
+      <>
+        <Login onLogin={() => {}} showToast={showToast} />
+        {toastMessage && (
+          <div className="fixed bottom-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-6 py-3 rounded-full shadow-2xl z-50 flex items-center gap-2 animate-in fade-in slide-in-from-bottom-4">
+            <span className="material-symbols-outlined text-sm">info</span>
+            <span className="text-sm font-medium">{toastMessage}</span>
+          </div>
+        )}
+      </>
+    );
+  }
 
   return (
     <div className="flex h-screen bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display overflow-hidden">
