@@ -1,26 +1,38 @@
 import React from 'react';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import { initialTransactions, initialCategories } from '../data';
+import { initialCategories } from '../data';
 
 interface DashboardProps {
   setActiveView: (view: string) => void;
   showToast: (msg: string) => void;
+  openModal: () => void;
+  transactions: any[];
+  loading: boolean;
 }
 
-export default function Dashboard({ setActiveView, showToast }: DashboardProps) {
-  const pieData = initialCategories.map(c => ({
-    name: c.name,
-    value: c.spent,
-    color: c.color
+export default function Dashboard({ setActiveView, showToast, openModal, transactions, loading }: DashboardProps) {
+  const totalIncome = transactions.filter(t => t.type === 'income').reduce((acc, t) => acc + Number(t.amount), 0);
+  const totalExpense = transactions.filter(t => t.type === 'expense').reduce((acc, t) => acc + Number(t.amount), 0);
+  const balance = totalIncome - totalExpense;
+
+  const expensesByCategory = transactions.filter(t => t.type === 'expense').reduce((acc, t) => {
+    acc[t.category] = (acc[t.category] || 0) + Number(t.amount);
+    return acc;
+  }, {} as Record<string, number>);
+
+  const getCategoryColor = (name: string) => {
+    const cat = initialCategories.find(c => c.name === name);
+    return cat ? cat.color : '#94a3b8';
+  };
+
+  const pieData = Object.keys(expensesByCategory).map(key => ({
+    name: key,
+    value: expensesByCategory[key],
+    color: getCategoryColor(key)
   }));
 
   const barData = [
-    { name: 'JAN', entradas: 6000, saidas: 4500 },
-    { name: 'FEV', entradas: 7500, saidas: 5000 },
-    { name: 'MAR', entradas: 8500, saidas: 4000 },
-    { name: 'ABR', entradas: 6500, saidas: 5500 },
-    { name: 'MAI', entradas: 9000, saidas: 4800 },
-    { name: 'JUN', entradas: 8000, saidas: 4200 },
+    { name: 'Atual', entradas: totalIncome, saidas: totalExpense }
   ];
 
   return (
@@ -32,7 +44,7 @@ export default function Dashboard({ setActiveView, showToast }: DashboardProps) 
             <span className="text-white/80 text-sm font-medium">Saldo Total</span>
             <span className="material-symbols-outlined opacity-80">account_balance</span>
           </div>
-          <div className="text-3xl font-bold mb-2">R$ 12.450,00</div>
+          <div className="text-3xl font-bold mb-2">R$ {balance.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
           <div className="flex items-center gap-1 text-sm text-green-300">
             <span className="material-symbols-outlined text-xs">trending_up</span>
             <span>+5.2% em relação ao mês anterior</span>
@@ -43,7 +55,7 @@ export default function Dashboard({ setActiveView, showToast }: DashboardProps) 
             <span className="text-slate-500 text-sm font-medium">Entradas (Mês)</span>
             <span className="material-symbols-outlined text-green-500">arrow_circle_up</span>
           </div>
-          <div className="text-3xl font-bold text-slate-900 dark:text-white mb-2">R$ 8.200,00</div>
+          <div className="text-3xl font-bold text-slate-900 dark:text-white mb-2">R$ {totalIncome.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
           <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
             <div className="bg-green-500 h-full w-[85%]"></div>
           </div>
@@ -53,7 +65,7 @@ export default function Dashboard({ setActiveView, showToast }: DashboardProps) 
             <span className="text-slate-500 text-sm font-medium">Saídas (Mês)</span>
             <span className="material-symbols-outlined text-red-500">arrow_circle_down</span>
           </div>
-          <div className="text-3xl font-bold text-slate-900 dark:text-white mb-2">R$ 4.500,00</div>
+          <div className="text-3xl font-bold text-slate-900 dark:text-white mb-2">R$ {totalExpense.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
           <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
             <div className="bg-red-500 h-full w-[45%]"></div>
           </div>
@@ -86,21 +98,21 @@ export default function Dashboard({ setActiveView, showToast }: DashboardProps) 
                 </PieChart>
               </ResponsiveContainer>
               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                <span className="text-2xl font-bold">R$ 4.5k</span>
+                <span className="text-2xl font-bold">R$ {totalExpense > 1000 ? (totalExpense/1000).toFixed(1) + 'k' : totalExpense.toFixed(0)}</span>
                 <span className="text-[10px] text-slate-500 uppercase tracking-wider">Total Saídas</span>
               </div>
             </div>
             <div className="flex-1 space-y-4 w-full">
-              {initialCategories.map((cat) => {
-                const percentage = Math.round((cat.spent / 4500) * 100);
+              {pieData.map((cat, index) => {
+                const percentage = totalExpense > 0 ? Math.round((cat.value / totalExpense) * 100) : 0;
                 return (
-                  <div key={cat.id} className="flex items-center justify-between text-sm">
+                  <div key={index} className="flex items-center justify-between text-sm">
                     <div className="flex items-center gap-2">
                       <div className="size-3 rounded-full" style={{ backgroundColor: cat.color }}></div>
                       <span>{cat.name} ({percentage}%)</span>
                     </div>
                     <span className="font-semibold text-slate-700 dark:text-slate-300">
-                      R$ {cat.spent.toLocaleString('pt-BR')}
+                      R$ {cat.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                     </span>
                   </div>
                 );
@@ -154,7 +166,7 @@ export default function Dashboard({ setActiveView, showToast }: DashboardProps) 
       <div className="bg-white dark:bg-slate-900 p-6 lg:p-8 rounded-2xl border border-slate-200 dark:border-slate-800">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
           <h3 className="text-lg font-bold">Últimas Transações</h3>
-          <button onClick={() => showToast('Abrindo formulário de Nova Transação...')} className="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-primary/90 transition-all">
+          <button onClick={openModal} className="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-primary/90 transition-all">
             <span className="material-symbols-outlined text-sm">add</span>
             Nova Transação
           </button>
@@ -171,7 +183,11 @@ export default function Dashboard({ setActiveView, showToast }: DashboardProps) 
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-              {initialTransactions.slice(0, 4).map((tx) => {
+              {loading ? (
+                <tr><td colSpan={5} className="py-8 text-center text-slate-500">Carregando...</td></tr>
+              ) : transactions.length === 0 ? (
+                <tr><td colSpan={5} className="py-8 text-center text-slate-500">Nenhuma transação encontrada.</td></tr>
+              ) : transactions.slice(0, 4).map((tx) => {
                 const isIncome = tx.type === 'income';
                 const cat = initialCategories.find(c => c.name === tx.category);
                 
@@ -207,14 +223,10 @@ export default function Dashboard({ setActiveView, showToast }: DashboardProps) 
                       {new Date(tx.date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
                     </td>
                     <td className="py-4">
-                      {tx.status === 'completed' ? (
-                        <span className="px-2 py-1 bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400 text-[10px] font-bold uppercase rounded">Concluído</span>
-                      ) : (
-                        <span className="px-2 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-[10px] font-bold uppercase rounded">Pendente</span>
-                      )}
+                      <span className="px-2 py-1 bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400 text-[10px] font-bold uppercase rounded">Concluído</span>
                     </td>
                     <td className={`py-4 text-right font-bold ${isIncome ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                      {isIncome ? '+' : '-'} R$ {tx.amount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                      {isIncome ? '+' : '-'} R$ {Number(tx.amount).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                     </td>
                   </tr>
                 );

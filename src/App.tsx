@@ -3,33 +3,59 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import MobileNav from './components/MobileNav';
 import Dashboard from './views/Dashboard';
 import Transactions from './views/Transactions';
 import Budget from './views/Budget';
+import TransactionModal from './components/TransactionModal';
+import { supabase } from './lib/supabase';
 
 export default function App() {
   const [activeView, setActiveView] = useState('dashboard');
   const [toastMessage, setToastMessage] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [transactions, setTransactions] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchTransactions();
+  }, []);
+
+  const fetchTransactions = async () => {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from('transactions')
+      .select('*')
+      .order('date', { ascending: false });
+
+    if (!error && data) {
+      setTransactions(data);
+    } else if (error) {
+      console.error('Error fetching transactions:', error);
+    }
+    setLoading(false);
+  };
 
   const showToast = (message: string) => {
     setToastMessage(message);
     setTimeout(() => setToastMessage(''), 3000);
   };
 
+  const openModal = () => setIsModalOpen(true);
+
   const renderView = () => {
     switch (activeView) {
       case 'dashboard':
-        return <Dashboard setActiveView={setActiveView} showToast={showToast} />;
+        return <Dashboard setActiveView={setActiveView} showToast={showToast} openModal={openModal} transactions={transactions} loading={loading} />;
       case 'transactions':
-        return <Transactions showToast={showToast} />;
+        return <Transactions showToast={showToast} openModal={openModal} transactions={transactions} loading={loading} />;
       case 'budget':
-        return <Budget showToast={showToast} />;
+        return <Budget showToast={showToast} openModal={openModal} transactions={transactions} loading={loading} />;
       default:
-        return <Dashboard setActiveView={setActiveView} showToast={showToast} />;
+        return <Dashboard setActiveView={setActiveView} showToast={showToast} openModal={openModal} transactions={transactions} loading={loading} />;
     }
   };
 
@@ -57,7 +83,9 @@ export default function App() {
           {renderView()}
         </main>
         
-        <MobileNav activeView={activeView} setActiveView={setActiveView} showToast={showToast} />
+        <MobileNav activeView={activeView} setActiveView={setActiveView} showToast={showToast} openModal={openModal} />
+
+        <TransactionModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSuccess={fetchTransactions} showToast={showToast} />
 
         {/* Toast Notification */}
         {toastMessage && (

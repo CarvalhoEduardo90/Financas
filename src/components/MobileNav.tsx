@@ -4,9 +4,10 @@ interface MobileNavProps {
   activeView: string;
   setActiveView: (view: string) => void;
   showToast: (msg: string) => void;
+  openModal: () => void;
 }
 
-export default function MobileNav({ activeView, setActiveView, showToast }: MobileNavProps) {
+export default function MobileNav({ activeView, setActiveView, showToast, openModal }: MobileNavProps) {
   const navItems = [
     { id: 'dashboard', label: 'Resumo', icon: 'dashboard' },
     { id: 'transactions', label: 'Extrato', icon: 'receipt_long' },
@@ -31,7 +32,7 @@ export default function MobileNav({ activeView, setActiveView, showToast }: Mobi
         <span className="text-[10px] font-bold">Orçamento</span>
       </button>
       <div className="-mt-8">
-        <button onClick={() => showToast('Abrindo formulário de Nova Transação...')} className="size-14 bg-primary text-white rounded-full shadow-lg flex items-center justify-center hover:bg-primary/90 transition-colors">
+        <button onClick={openModal} className="size-14 bg-primary text-white rounded-full shadow-lg flex items-center justify-center hover:bg-primary/90 transition-colors">
           <span className="material-symbols-outlined text-3xl">add</span>
         </button>
       </div>

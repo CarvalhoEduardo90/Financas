@@ -1,21 +1,24 @@
 import React, { useState } from 'react';
-import { initialTransactions, initialCategories } from '../data';
+import { initialCategories } from '../data';
 
 interface TransactionsProps {
   showToast: (msg: string) => void;
+  openModal: () => void;
+  transactions: any[];
+  loading: boolean;
 }
 
-export default function Transactions({ showToast }: TransactionsProps) {
+export default function Transactions({ showToast, openModal, transactions, loading }: TransactionsProps) {
   const [filterType, setFilterType] = useState('Tudo');
 
-  const filteredTransactions = initialTransactions.filter(tx => {
+  const filteredTransactions = transactions.filter(tx => {
     if (filterType === 'Entradas') return tx.type === 'income';
     if (filterType === 'Saídas') return tx.type === 'expense';
     return true;
   });
 
-  const totalEntradas = initialTransactions.filter(t => t.type === 'income').reduce((acc, t) => acc + t.amount, 0);
-  const totalSaidas = initialTransactions.filter(t => t.type === 'expense').reduce((acc, t) => acc + t.amount, 0);
+  const totalEntradas = transactions.filter(t => t.type === 'income').reduce((acc, t) => acc + Number(t.amount), 0);
+  const totalSaidas = transactions.filter(t => t.type === 'expense').reduce((acc, t) => acc + Number(t.amount), 0);
   const saldoAtual = totalEntradas - totalSaidas;
 
   return (
@@ -26,7 +29,7 @@ export default function Transactions({ showToast }: TransactionsProps) {
           <h1 className="text-2xl font-black text-slate-900 dark:text-slate-50 tracking-tight">Transações Detalhadas</h1>
           <p className="text-slate-500 dark:text-slate-400">Gerencie e monitore o fluxo de caixa da sua família.</p>
         </div>
-        <button onClick={() => showToast('Abrindo formulário de Nova Transação...')} className="flex items-center gap-2 bg-primary text-white px-5 py-2.5 rounded-xl font-bold hover:bg-primary/90 transition shadow-lg shadow-primary/20">
+        <button onClick={openModal} className="flex items-center gap-2 bg-primary text-white px-5 py-2.5 rounded-xl font-bold hover:bg-primary/90 transition shadow-lg shadow-primary/20">
           <span className="material-symbols-outlined text-[20px]">add_circle</span>
           Nova Transação
         </button>
@@ -89,7 +92,11 @@ export default function Transactions({ showToast }: TransactionsProps) {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-              {filteredTransactions.map((tx) => {
+              {loading ? (
+                <tr><td colSpan={6} className="py-12 text-center text-slate-500">Carregando transações...</td></tr>
+              ) : filteredTransactions.length === 0 ? (
+                <tr><td colSpan={6} className="py-12 text-center text-slate-500">Nenhuma transação encontrada.</td></tr>
+              ) : filteredTransactions.map((tx) => {
                 const isIncome = tx.type === 'income';
                 const cat = initialCategories.find(c => c.name === tx.category);
                 
@@ -116,7 +123,7 @@ export default function Transactions({ showToast }: TransactionsProps) {
                     <td className="px-6 py-4">
                       <div className="flex flex-col">
                         <span className="text-sm font-semibold">{tx.description}</span>
-                        <span className="text-xs text-slate-400">{tx.paymentMethod}</span>
+                        <span className="text-xs text-slate-400">{tx.paymentMethod || 'Cartão/Dinheiro'}</span>
                       </div>
                     </td>
                     <td className="px-6 py-4">
@@ -126,19 +133,13 @@ export default function Transactions({ showToast }: TransactionsProps) {
                       </span>
                     </td>
                     <td className={`px-6 py-4 text-sm font-bold ${isIncome ? 'text-emerald-500' : 'text-red-500'}`}>
-                      {isIncome ? '+' : '-'} R$ {tx.amount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                      {isIncome ? '+' : '-'} R$ {Number(tx.amount).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex justify-center">
-                        {tx.status === 'completed' ? (
-                          <span className="px-2 py-0.5 rounded text-[11px] font-bold uppercase bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
-                            {isIncome ? 'Recebido' : 'Pago'}
-                          </span>
-                        ) : (
-                          <span className="px-2 py-0.5 rounded text-[11px] font-bold uppercase bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400">
-                            Pendente
-                          </span>
-                        )}
+                        <span className="px-2 py-0.5 rounded text-[11px] font-bold uppercase bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
+                          {isIncome ? 'Recebido' : 'Pago'}
+                        </span>
                       </div>
                     </td>
                     <td className="px-6 py-4 text-right">
@@ -155,7 +156,7 @@ export default function Transactions({ showToast }: TransactionsProps) {
         
         {/* Pagination */}
         <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800/50 flex items-center justify-between">
-          <span className="text-xs font-medium text-slate-500">Mostrando {filteredTransactions.length} de {initialTransactions.length} transações</span>
+          <span className="text-xs font-medium text-slate-500">Mostrando {filteredTransactions.length} transações</span>
           <div className="flex gap-2">
             <button onClick={() => showToast('Página anterior')} className="p-1.5 rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 disabled:opacity-50" disabled>
               <span className="material-symbols-outlined text-[18px]">chevron_left</span>

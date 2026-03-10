@@ -3,12 +3,22 @@ import { initialCategories, initialGoals } from '../data';
 
 interface BudgetProps {
   showToast: (msg: string) => void;
+  openModal: () => void;
+  transactions: any[];
+  loading: boolean;
 }
 
-export default function Budget({ showToast }: BudgetProps) {
-  const totalBudget = initialCategories.reduce((acc, c) => acc + c.budget, 0);
-  const totalSpent = initialCategories.reduce((acc, c) => acc + c.spent, 0);
-  const percentageSpent = Math.round((totalSpent / totalBudget) * 100);
+export default function Budget({ showToast, openModal, transactions, loading }: BudgetProps) {
+  const categoriesWithSpent = initialCategories.map(c => {
+    const spent = transactions
+      .filter(t => t.type === 'expense' && t.category === c.name)
+      .reduce((acc, t) => acc + Number(t.amount), 0);
+    return { ...c, spent };
+  });
+
+  const totalBudget = categoriesWithSpent.reduce((acc, c) => acc + c.budget, 0);
+  const totalSpent = categoriesWithSpent.reduce((acc, c) => acc + c.spent, 0);
+  const percentageSpent = totalBudget > 0 ? Math.round((totalSpent / totalBudget) * 100) : 0;
 
   return (
     <div className="flex flex-col min-h-full">
@@ -45,7 +55,7 @@ export default function Budget({ showToast }: BudgetProps) {
               <p className="text-slate-500 dark:text-slate-400 mt-1">Gestão inteligente para a Família Silva</p>
             </div>
             <div className="flex gap-2">
-              <button onClick={() => showToast('Abrindo formulário de Novo Gasto...')} className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg font-semibold hover:opacity-90 transition-opacity">
+              <button onClick={openModal} className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg font-semibold hover:opacity-90 transition-opacity">
                 <span className="material-symbols-outlined text-sm">add_circle</span>
                 Novo Gasto
               </button>
@@ -111,8 +121,8 @@ export default function Budget({ showToast }: BudgetProps) {
               Acompanhamento por Categoria
             </h2>
             <div className="space-y-8">
-              {initialCategories.map(cat => {
-                const percent = Math.round((cat.spent / cat.budget) * 100);
+              {categoriesWithSpent.map(cat => {
+                const percent = cat.budget > 0 ? Math.round((cat.spent / cat.budget) * 100) : 0;
                 const isOver = percent > 100;
                 const remaining = cat.budget - cat.spent;
                 
@@ -138,18 +148,32 @@ export default function Budget({ showToast }: BudgetProps) {
                         </div>
                         <div>
                           <p className="font-bold">{cat.name}</p>
-                          <p className={`text-xs ${isOver ? 'text-red-500 font-medium' : 'text-slate-400'}`}>
-                            {isOver ? `Excedeu R$ ${Math.abs(remaining).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : percent === 100 ? 'Fixos e em dia' : `Restam R$ ${remaining.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
-                          </p>
+                          <p className="text-xs text-slate-500">{percent}% utilizado</p>
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="font-bold text-slate-900 dark:text-white">R$ {cat.spent.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} / <span className="text-slate-400">R$ {cat.budget.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span></p>
-                        <p className={`text-xs font-medium ${textColor}`}>{percent}% gasto</p>
+                        <p className="font-bold">R$ {cat.spent.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
+                        <p className="text-xs text-slate-500">de R$ {cat.budget.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
                       </div>
                     </div>
-                    <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-3 overflow-hidden">
-                      <div className={`${barColor} h-3 rounded-full transition-all duration-500`} style={{ width: `${Math.min(percent, 100)}%` }}></div>
+                    <div className="w-full bg-slate-100 dark:bg-slate-800 h-2.5 rounded-full overflow-hidden">
+                      <div 
+                        className={`h-full rounded-full transition-all duration-500 ${barColor}`} 
+                        style={{ width: `${Math.min(percent, 100)}%` }}
+                      ></div>
+                    </div>
+                    <div className="mt-2 flex justify-between text-xs font-medium">
+                      {isOver ? (
+                        <span className="text-red-500 flex items-center gap-1">
+                          <span className="material-symbols-outlined text-[14px]">warning</span>
+                          Estourou R$ {Math.abs(remaining).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                        </span>
+                      ) : (
+                        <span className="text-slate-500 flex items-center gap-1">
+                          <span className="material-symbols-outlined text-[14px]">check_circle</span>
+                          Restam R$ {remaining.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                        </span>
+                      )}
                     </div>
                   </div>
                 );
